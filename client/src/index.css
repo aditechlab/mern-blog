@@ -350,6 +350,13 @@ input, select, textarea {
     color: var(--color-primary);
 }
 
+/* customer style for react quill */
+.ql-editor {
+    overflow: scroll;
+    background: var(--color-white);
+    height: 8rem !important;
+}
+
 
 
 /*================AUTHORS CSS================*/
