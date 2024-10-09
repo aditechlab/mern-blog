@@ -37,3 +37,5 @@ export const DUMMY_POSTS = [
         authorID:3
     }
 ]
+
+export const POST_CATEGORIES = ["Agriculture","Business","Education","Entertainment","Art","Investment","Weather"];

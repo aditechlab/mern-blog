@@ -1,9 +1,8 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { POST_CATEGORIES } from '../data';
 
 const Footer = () => {
-
-  const POST_CATEGORIES = ["Agriculture","Business","Education","Entertainment","Art","Investment","Weather"];
 
   return (
     <footer>
