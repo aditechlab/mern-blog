@@ -3,9 +3,23 @@ const cors = require('cors')
 require('dotenv').config();
 const connectDB = require('./database/connection');
 
-const app = express();
-app.use(cors());
+const userRoutes = require('./routes/userRoutes');
+const postRoutes = require('./routes/postRoutes');
 
+//middleware routes
+const {notFound, errorHandler} = require('./middleware/errorMiddleware')
+
+const app = express();
+app.use(express.json({extended: true}))
+app.use(express.urlencoded({extended: true}))
+app.use(cors({credentials:true, origin: 'http://localhost:3000'}));
+
+
+//routes
+app.use('/api/users', userRoutes);
+app.use('/api/posts', postRoutes);
+app.use(notFound);
+app.use(errorHandler);
 
 connectDB()
     .then(() => {
