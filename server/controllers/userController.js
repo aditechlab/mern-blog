@@ -1,9 +1,10 @@
-//===============Register user
-// POST: api/users/register
-
 const HttpError = require("../models/errorModel");
 const User = require("../models/userModel");
+const bcrypt = require("bcryptjs");
 
+
+//===============Register user
+// POST: api/users/register
 //unprotected
 const registerUser = async (req, res, next) => {
     try{
@@ -29,8 +30,12 @@ const registerUser = async (req, res, next) => {
         if(password != password2){
             return next(new HttpError("Passwords do not match!. ", 422));
         }
-        
-        const newUser = await User.create({name, email: newEmail, password});
+
+        //hash password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPass = await bcrypt.hash(password, salt);
+
+        const newUser = await User.create({name, email: newEmail, password: hashedPass});
         res.status(201).json(newUser);
 
     }catch(error){
