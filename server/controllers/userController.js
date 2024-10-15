@@ -113,8 +113,13 @@ const editUser = (req, res, next) => {
 //===============View Registered Authors
 // POST: api/users/register
 //protected
-const getAuthors = (req, res, next) => {
-    res.json('Get all users/authors');
+const getAuthors = async (req, res, next) => {
+    try {
+        const authors = await User.find().select('-password');
+        res.json(authors);
+    } catch (error) {
+        return next(new HttpError(error))
+    }
 }
 
 module.exports = {
