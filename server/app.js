@@ -5,6 +5,7 @@ const connectDB = require('./database/connection');
 
 const userRoutes = require('./routes/userRoutes');
 const postRoutes = require('./routes/postRoutes');
+const upload = require('express-fileupload');
 
 //middleware routes
 const {notFound, errorHandler} = require('./middleware/errorMiddleware')
@@ -20,6 +21,10 @@ app.use('/api/users', userRoutes);
 app.use('/api/posts', postRoutes);
 app.use(notFound);
 app.use(errorHandler);
+
+//file upload
+app.use(upload());
+app.use('/uploads', express.static(__dirname + '/uploads'));
 
 connectDB()
     .then(() => {

@@ -99,8 +99,16 @@ const getUserProfile = async (req, res, next) => {
 //===============Change user avatar(profile picture)
 // POST: api/users/register
 //protected
-const changeUserAvatar = (req, res, next) => {
-    res.json('change User Avatar profile')
+const changeUserAvatar = async (req, res, next) => {
+    try {
+        const avatar = req.files
+        if(!avatar){
+            return next(new HttpError("Please choose an image", 422));
+        }
+        res.json(req.files.avatar);
+    } catch (error) {
+        return next(new HttpError(error));
+    }
 }
 
 //===============Edit User
