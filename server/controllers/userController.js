@@ -2,6 +2,7 @@ const HttpError = require("../models/errorModel");
 const User = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 var jwt = require('jsonwebtoken');
+const upload = require('../config/upload')
 
 
 
@@ -101,11 +102,20 @@ const getUserProfile = async (req, res, next) => {
 //protected
 const changeUserAvatar = async (req, res, next) => {
     try {
-        const avatar = req.files
-        if(!avatar){
-            return next(new HttpError("Please choose an image", 422));
-        }
-        res.json(req.files.avatar);
+        upload.single('avatar')(req, res, function(err){
+            if(err){
+                return next(new HttpError(err.message, 422));
+            }
+
+            if (!req.file) {
+                return next(new HttpError("Please choose an image", 422));
+            }
+            res.status(200).json({
+                message: "Avatar uploaded successfully",
+                file: req.file // Return file details
+              });
+        });
+        
     } catch (error) {
         return next(new HttpError(error));
     }
