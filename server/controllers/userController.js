@@ -102,13 +102,19 @@ const getUserProfile = async (req, res, next) => {
 //protected
 const changeUserAvatar = async (req, res, next) => {
     try {
-        upload.single('avatar')(req, res, function(err){
+        upload.single('avatar') (req, res, async function(err){
             if(err){
                 return next(new HttpError(err.message, 422));
             }
 
             if (!req.file) {
                 return next(new HttpError("Please choose an image", 422));
+            }
+
+            //update existing avatar
+            const updateAvatar = await User.findByIdAndUpdate(req.user.id, {avatar: req.file.filename}, {new:true});
+            if(!updateAvatar){
+                return next(new HttpError("Avatar could not be changed", 422));
             }
             res.status(200).json({
                 message: "Avatar uploaded successfully",
