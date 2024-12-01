@@ -40,7 +40,19 @@ const getAuthorPosts = async (req, res, next) => {
 //protected
 
 const createPost = async (req, res, next) => {
-    res.json("This is the api for creating posts")
+    try {
+        const {title, category, description, avatar} = req.body
+        if(!title || !category || !description || !creator){
+            return next(new HttpError("Fill all fields", 422));
+        }
+
+        const userPost = user.req.id
+
+        const newPost = await Post.create({title, category, description, creator:userPost});
+        res.status(200).json(newPost);
+    } catch (error) {
+        return next(new HttpError(error))
+    }
 }
 
 //===============Edit a Post
