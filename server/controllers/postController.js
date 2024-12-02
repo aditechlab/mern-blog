@@ -39,7 +39,15 @@ const getSinglePosts = async (req, res, next) => {
 //unprotected
 
 const getCategoryPosts = async (req, res, next) => {
-    res.json("Return Category posts")
+    try {
+        const {category} = req.params
+        const catPosts = await Post.find({category}).sort({createdAt: -1});
+        
+        return res.status(200).json(catPosts)
+
+    } catch (error) {
+        return next(new HttpError(error))
+    }
 }
 
 //===============Get Category Posts
