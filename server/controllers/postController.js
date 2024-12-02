@@ -22,7 +22,16 @@ const getPosts = async (req, res, next) => {
 //unprotected
 
 const getSinglePosts = async (req, res, next) => {
-    res.json("Return single post")
+    try {
+        const postId = req.params.id;
+        const post = await Post.findById(postId);
+        if(!post){
+            return next(new HttpError("No post found for this id", 404))
+        }
+        return res.status(200).json(post)
+    } catch (error) {
+        return next(new HttpError(error))
+    }
 }
 
 //===============Get Category Posts
