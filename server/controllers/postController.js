@@ -1,6 +1,7 @@
 const HttpError = require('../models/errorModel')
 const Post = require('../models/postModel')
 var jwt = require('jsonwebtoken');
+const User = require("../models/userModel");
 
 //===============Get Posts
 // Get: api/posts/
@@ -41,15 +42,34 @@ const getAuthorPosts = async (req, res, next) => {
 
 const createPost = async (req, res, next) => {
     try {
-        const {title, category, description, avatar} = req.body
-        if(!title || !category || !description || !creator){
+        let { title, category, description } = req.body
+        if(!title || !category || !description){
             return next(new HttpError("Fill all fields", 422));
         }
+        
 
-        const userPost = user.req.id
+        if (!req.file) {
+            return next(new HttpError("Please choose an image", 422));
+        }
 
-        const newPost = await Post.create({title, category, description, creator:userPost});
+        if(req.file.size > 2000000){
+            return next(new HttpError("Thumbnail too big, file size should be less than 2MB.", 422))
+        }
+        const userPost = req.user.id
+
+        const newPost = await Post.create({title, category, description, image:req.file.filename, creator:userPost});
+        if(!newPost){
+            return next(new HttpError("Post could not be created", 422))
+        }
+
+        //post counts
+        const currentUser = await User.findById(req.user.id);
+        const userPostCount = currentUser.posts + 1;
+        await User.findByIdAndUpdate(req.user.id, {posts:userPostCount})
         res.status(200).json(newPost);
+
+
+        
     } catch (error) {
         return next(new HttpError(error))
     }
