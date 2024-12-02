@@ -8,7 +8,12 @@ const User = require("../models/userModel");
 //unprotected
 
 const getPosts = async (req, res, next) => {
-    res.json("Return all posts")
+    try {
+        const posts = await Post.find().sort({updatedAt: -1})
+        res.status(200).json(posts);
+    } catch (error) {
+        return next(new HttpError(error))
+    }
 }
 
 
