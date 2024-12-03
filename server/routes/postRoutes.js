@@ -20,7 +20,7 @@ router.get('/:id', getSinglePosts);
 router.get('/categories/:category', getCategoryPosts);
 router.get('/users/:id', getAuthorPosts);
 router.post('/create', upload.single('image'), authMiddleware, createPost);
-router.patch('/edit-post', authMiddleware, editPost);
+router.patch('/:id', upload.single('image'), authMiddleware, editPost);
 router.delete('/:id', authMiddleware, deletePost)
 
 module.exports = router;

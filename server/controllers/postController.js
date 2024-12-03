@@ -2,6 +2,9 @@ const HttpError = require('../models/errorModel')
 const Post = require('../models/postModel')
 var jwt = require('jsonwebtoken');
 const User = require("../models/userModel");
+const fs = require('fs');
+const path = require('path');
+const upload = require('../config/upload');
 
 //===============Get Posts
 // Get: api/posts/
@@ -106,11 +109,66 @@ const createPost = async (req, res, next) => {
 //===============Edit a Post
 // Patch: api/posts/:id
 //protected
-
 const editPost = async (req, res, next) => {
-    res.json("edit posts")
-}
+    try {
+        const postId = req.params.id;
+        const { title, category, description } = req.body;
 
+        // Validate fields
+        if (!title || !category || !description || description.length < 12) {
+            return next(new HttpError("Fill in all fields with valid data", 422));
+        }
+
+        let updatedPost;
+        const oldPost = await Post.findById(postId);
+
+        if (!oldPost) {
+            return next(new HttpError("Post not found", 404));
+        }
+
+        if (oldPost.creator.toString() !== req.user.id) {
+            return next(new HttpError("You are not authorized to edit this post", 403));
+        }
+
+        if (req.file) {
+            // Validate file size
+            if (req.file.size > 2000000) {
+                return next(new HttpError("Thumbnail too big, file size should be less than 2MB.", 422));
+            }
+
+            // Delete old image
+            const oldImagePath = path.join(__dirname, '..', 'uploads', oldPost.image);
+            fs.unlink(oldImagePath, (err) => {
+                if (err) {
+                    console.error(`Error deleting old image: ${err.message}`);
+                }
+            });
+
+            // Update with new image
+            updatedPost = await Post.findByIdAndUpdate(
+                postId,
+                { title, category, description, image: req.file.filename },
+                { new: true }
+            );
+        } else {
+            // Update without changing the image
+            updatedPost = await Post.findByIdAndUpdate(
+                postId,
+                { title, category, description },
+                { new: true }
+            );
+        }
+
+        if (!updatedPost) {
+            return next(new HttpError("Problem updating post", 422));
+        }
+
+        res.status(200).json(updatedPost);
+    } catch (error) {
+        console.error(`Error: ${error.message}`);
+        return next(new HttpError(error.message || "An error occurred", 500));
+    }
+};
 //===============Delete a Post
 // delete: api/posts/:id
 //protected
