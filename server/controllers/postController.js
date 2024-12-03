@@ -55,7 +55,13 @@ const getCategoryPosts = async (req, res, next) => {
 //unprotected
 
 const getAuthorPosts = async (req, res, next) => {
-    res.json("Return author posts")
+    try {
+        const {id} = req.params;
+        const authorPosts = await Post.find({creator:id}).sort({createdAt:-1});
+        return res.status(200).json(authorPosts);
+    } catch (error) {
+        return next(new HttpError(error))
+    }
 }
 
 //===============Create a Post
