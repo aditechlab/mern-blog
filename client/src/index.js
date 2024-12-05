@@ -17,6 +17,7 @@ import AuthorPosts from './pages/AuthorPosts'
 import Dashboard from './pages/Dashboard'
 import Logout from './pages/Logout'
 import UserProvider from './context/userContext';
+import DeletePost from './pages/DeletePost';
 
 const router = createBrowserRouter([
   {
@@ -35,6 +36,7 @@ const router = createBrowserRouter([
       {path: "posts/users/:id", element: <AuthorPosts />},
       {path: "myposts/:id", element: <Dashboard />},
       {path: "posts/:id/edit", element: <EditPost />},
+      {path: "posts/:id/delete", element: <DeletePost />},
       {path: "logout", element: <Logout />},
     ]
   }
