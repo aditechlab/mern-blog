@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import AccessControl from '../components/AccessControl';
 
 const EditPost = () => {
   const [title, setTitle] = useState('');
@@ -28,6 +29,7 @@ const EditPost = () => {
 
   return (
     <section className="create-post">
+      <AccessControl />
       <div className="container">
         <h2>Edit Post</h2>
         <p className="form__error-message">

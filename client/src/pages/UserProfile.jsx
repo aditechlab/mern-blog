@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 
 import Avatar from '../images/avatar15.jpg'
 import { FaCheck, FaEdit } from 'react-icons/fa'
+import AccessControl from '../components/AccessControl'
 
 const UserProfile = () => {
   const [avatar, setAvatar] = useState(Avatar)
@@ -14,6 +15,7 @@ const UserProfile = () => {
   
   return (
     <section className='profile'>
+      <AccessControl />
       <div className="container profile__container">
         <Link to={'/myposts/sdfsd'} className='btn'>My posts</Link>
         
