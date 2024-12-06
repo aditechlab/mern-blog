@@ -617,3 +617,13 @@ input, select, textarea {
         width: 5rem;
     }
 }
+
+
+/*================  LOADER CSS================*/
+.loader {
+    width: var(--container-width-md);
+    margin: 20rem;
+}
+.loader__image img {
+    width: 30rem;
+}
