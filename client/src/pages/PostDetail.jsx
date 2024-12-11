@@ -9,7 +9,6 @@ import axios from "axios";
 const PostDetail = () => {
   const {id} = useParams();
   const [post, setPost] = useState(null)
-  const [creatorID, setcreatorID] = useState(null);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -23,7 +22,6 @@ const PostDetail = () => {
         const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/posts/${id}`);
         
         setPost(response.data);
-        setcreatorID(response.data.creator);
       } catch (err) {
         setError(err.message || "An error occurred");
       }
@@ -40,11 +38,11 @@ const PostDetail = () => {
       {error && <div className="error">{error}</div>}
       {post && <div className="container post-detail__container">
         <div className="post-detail__header">
-          <PostAuthor authorID={creatorID} createdAt={post?.createdAt}/>
+          <PostAuthor authorID={post.creator} createdAt={post?.createdAt}/>
           {currentUser?.id == post?.creator && 
             <div className="post-detail__buttons">
               <Link to={`/posts/${id}/edit`} className="btn sm primary">Edit</Link>
-              <DeletePost />
+              <DeletePost postID={id} />
             </div>
           }
         </div>
