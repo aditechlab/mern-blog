@@ -1,42 +1,61 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import PostAuthor from "../components/PostAuthor";
-import { Link } from "react-router-dom";
-import Thumbnail from "../images/blog22.jpg";
+import { Link, useParams } from "react-router-dom";
+import Loader from "../components/Loader";
+import DeletePost from './DeletePost'
+import { UserContext } from "../context/userContext";
+import axios from "axios";
 
 const PostDetail = () => {
+  const {id} = useParams();
+  const [post, setPost] = useState(null)
+  const [creatorID, setcreatorID] = useState(null);
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  //get current login user
+  const {currentUser} = useContext(UserContext);
+
+  useEffect(()=> {
+    const getPost = async () => {
+      setIsLoading(true)
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/posts/${id}`);
+        
+        setPost(response.data);
+        setcreatorID(response.data.creator);
+      } catch (err) {
+        setError(err.message || "An error occurred");
+      }
+      setIsLoading(false)
+    }
+    getPost();
+  },[id])
+
+  if(isLoading){
+    return <Loader />
+  }
   return (
     <section className="post-detail">
-      <div className="container post-detail__container">
+      {error && <div className="error">{error}</div>}
+      {post && <div className="container post-detail__container">
         <div className="post-detail__header">
-          <PostAuthor />
-          <div className="post-detail__buttons">
-            <Link to={`/posts/name/edit`} className="btn sm primary">
-              Edit
-            </Link>
-            <Link to={`/posts/name/delete`} className="btn sm danger">
-              Delete
-            </Link>
-          </div>
+          <PostAuthor authorID={creatorID} createdAt={post?.createdAt}/>
+          {currentUser?.id == post?.creator && 
+            <div className="post-detail__buttons">
+              <Link to={`/posts/${id}/edit`} className="btn sm primary">Edit</Link>
+              <DeletePost />
+            </div>
+          }
         </div>
-        <h1>this is the post title!</h1>
+        <h1>{post.title}</h1>
         <div className="post-detail__thumbnail">
-          <img src={Thumbnail} alt="" />
+          <img src={`${process.env.REACT_APP_ASSETS_BASE_URL}/uploads/${post.image}`} alt="" />
         </div>
         <p>
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Id cumque
-          natus totam nostrum? Id sunt magni inventore eaque a praesentium
-          nostrum, reprehenderit impedit, sequi, repellendus aspernatur tempore
-          animi voluptatum assumenda ex temporibus? Pariatur repudiandae dolor
-          excepturi voluptates ab sapiente sint!
+         {post.description}
         </p>
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Id cumque
-          natus totam nostrum? Id sunt magni inventore eaque a praesentium
-          nostrum, reprehenderit impedit, sequi, repellendus aspernatur tempore
-          animi voluptatum assumenda ex temporibus? Pariatur repudiandae dolor
-          excepturi voluptates ab sapiente sint!
-        </p>
-      </div>
+      </div>}
     </section>
   );
 };
