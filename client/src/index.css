@@ -621,9 +621,16 @@ input, select, textarea {
 
 /*================  LOADER CSS================*/
 .loader {
-    width: var(--container-width-md);
-    margin: 20rem;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    display: grid;
+    place-items: center;
+    background-color: var(--color-bg);
 }
-.loader__image img {
-    width: 30rem;
+.loader__image {
+    width: 10rem;
+    aspect-ratio: 1/1;
 }
