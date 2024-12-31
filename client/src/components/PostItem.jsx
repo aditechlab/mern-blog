@@ -16,7 +16,7 @@ const PostItem = ({postID, thumbnail, title, category,  description, authorID, c
             <h3>{postTitle}</h3>
             </Link>
         </div>
-        <p>{shortDescription}</p>
+        <p dangerouslySetInnerHTML={{__html:shortDescription}}></p>
         <div className="post__footer">
             <PostAuthor authorID={authorID} createdAt={createdAt}/>
             <Link to={`/posts/categories/${category}`} className='btn category'>{category}</Link>
