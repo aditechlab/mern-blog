@@ -5,7 +5,7 @@ const connectDB = require('./database/connection');
 
 const userRoutes = require('./routes/userRoutes');
 const postRoutes = require('./routes/postRoutes');
-const upload = require('express-fileupload');
+// const upload = require('express-fileupload');
 const path = require('path');
 
 //middleware routes
@@ -17,7 +17,7 @@ app.use(express.urlencoded({extended: true}))
 app.use(cors({credentials:true, origin: 'http://localhost:3000'}));
 
 //file upload
-app.use(upload());
+// app.use(upload());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 //routes
