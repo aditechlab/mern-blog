@@ -54,13 +54,35 @@ const EditPost = () => {
     getPost();
   }, [])
 
+  const editPost = async (e) => {
+    e.preventDefault();
+
+    const postData = new FormData();
+        postData.set('title', title);
+        postData.set('category', category);
+        postData.set('description', description);
+        postData.set('image', thumbnail);
+    
+        try {
+          const response = await axios.patch(`${process.env.REACT_APP_BASE_URL}/posts/${id}`, postData, 
+            {withCredentials: true, headers: {Authorization: `Bearer ${token}`}}
+          );
+          if(response.status == 200){
+            return navigate('/')
+          }
+    
+        } catch (err) {
+          setError(err.response.data.message)
+        }
+  }
+
   return (
     <section className="create-post">
       <AccessControl />
       <div className="container">
         <h2>Edit Post</h2>
         {error && <p className="form__error-message">{error}</p>}
-        <form action="" className="form create-post__form">
+        <form action="" className="form create-post__form" onSubmit={editPost}>
           <input type="text" name="title" placeholder='Title' id="title" value={title} onChange={e => setTitle(e.target.value)} autoFocus />
           <select name='category' value={category} onChange={e=>setCategory(e.target.value)}>
             {
