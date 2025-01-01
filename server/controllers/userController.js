@@ -2,6 +2,7 @@ const HttpError = require("../models/errorModel");
 const User = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 var jwt = require('jsonwebtoken');
+const upload = require('../config/upload')
 
 
 
@@ -101,16 +102,26 @@ const getUserProfile = async (req, res, next) => {
 //protected
 const changeUserAvatar = async (req, res, next) => {
     try {
-        const avatar = req.files?.avatar
-        if(!avatar){
-            return next(new HttpError("Please choose an image", 422));
-        }
-        // res.json(req.files.avatar);
-        res.json({
-            filename: avatar.name,
-            mimetype: avatar.mimetype,
-            size: avatar.size
+        upload.single('avatar') (req, res, async function(err){
+            if(err){
+                return next(new HttpError(err.message, 422));
+            }
+
+            if (!req.file) {
+                return next(new HttpError("Please choose an image", 422));
+            }
+
+            //update existing avatar
+            const updateAvatar = await User.findByIdAndUpdate(req.user.id, {avatar: req.file.filename}, {new:true});
+            if(!updateAvatar){
+                return next(new HttpError("Avatar could not be changed", 422));
+            }
+            res.status(200).json({
+                message: "Avatar uploaded successfully",
+                file: req.file // Return file details
+              });
         });
+        
     } catch (error) {
         return next(new HttpError(error)); 
     }
@@ -119,8 +130,49 @@ const changeUserAvatar = async (req, res, next) => {
 //===============Edit User
 // POST: api/users/register
 //protected
-const editUser = (req, res, next) => { 
-    res.json('change User Avatar profile')
+const editUser = async (req, res, next) => {
+    try {
+        const {name, email, currentPassword, newPassword, confirmNewPassword} = req.body;
+
+        if(!name || !email || !currentPassword || !newPassword){
+            return next(new HttpError("Fill all fields. ", 422));
+        }
+
+        //get user
+        const user = await User.findById(req.user.id);
+        if(!user){
+            return next(new HttpError("User not found", 403));
+        }
+
+        //email validation
+        const emailExist = await User.findOne({email});
+        if(emailExist && (emailExist._id != req.user.id)){
+            return next(new HttpError("This email exists, create new one", 422));
+        }
+
+        //compare current password with db password
+        const userValidatedPassword = await bcrypt.compare(currentPassword, user.password);
+        if(!userValidatedPassword){
+            return next(new HttpError("Invalid current password", 422));
+        }
+
+        //compare new passwords
+        if(newPassword !== confirmNewPassword){
+            return next(new HttpError("Password do not match", 422));
+        }
+
+        //hash new password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPass = await bcrypt.hash(newPassword, salt);
+
+        //update user
+        const newInfo = await User.findByIdAndUpdate(req.user.id, {name, email, password:hashedPass}, {new:true})
+        res.status(200).json(newInfo);
+
+
+    } catch (error) {
+        return next(new HttpError(error))
+    }
 }
 
 //===============View Registered Authors

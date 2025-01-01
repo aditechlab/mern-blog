@@ -1,11 +1,13 @@
 import React, { useState } from 'react'
 import { DUMMY_POSTS } from '../data'
 import { Link } from 'react-router-dom'
+import AccessControl from '../components/AccessControl'
 
 const Dashboard = () => {
   const [posts, setPosts] = useState(DUMMY_POSTS)
   return (
     <section className='dashboard'>
+      <AccessControl />
       {
         posts.length ? <div className="container dashboard__container">
           {

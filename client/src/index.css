@@ -617,3 +617,20 @@ input, select, textarea {
         width: 5rem;
     }
 }
+
+
+/*================  LOADER CSS================*/
+.loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    display: grid;
+    place-items: center;
+    background-color: var(--color-bg);
+}
+.loader__image {
+    width: 10rem;
+    aspect-ratio: 1/1;
+}
