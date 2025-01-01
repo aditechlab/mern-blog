@@ -101,20 +101,25 @@ const getUserProfile = async (req, res, next) => {
 //protected
 const changeUserAvatar = async (req, res, next) => {
     try {
-        const avatar = req.files
+        const avatar = req.files?.avatar
         if(!avatar){
             return next(new HttpError("Please choose an image", 422));
         }
-        res.json(req.files.avatar);
+        // res.json(req.files.avatar);
+        res.json({
+            filename: avatar.name,
+            mimetype: avatar.mimetype,
+            size: avatar.size
+        });
     } catch (error) {
-        return next(new HttpError(error));
+        return next(new HttpError(error)); 
     }
 }
 
 //===============Edit User
 // POST: api/users/register
 //protected
-const editUser = (req, res, next) => {
+const editUser = (req, res, next) => { 
     res.json('change User Avatar profile')
 }
 
