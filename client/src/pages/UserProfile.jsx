@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import Avatar from '../images/avatar15.jpg'
 import { FaCheck, FaEdit } from 'react-icons/fa'
 import AccessControl from '../components/AccessControl'
+import { UserContext } from '../context/userContext'
 
 const UserProfile = () => {
   const [avatar, setAvatar] = useState(Avatar)
@@ -13,11 +14,13 @@ const UserProfile = () => {
   const [newPassword, setNewPassword] = useState('')
   const [ConfirmNewPassword, setConfirmNewPassword] = useState('')
   
+   const { currentUser } = useContext(UserContext);
+
   return (
     <section className='profile'>
       <AccessControl />
       <div className="container profile__container">
-        <Link to={'/myposts/sdfsd'} className='btn'>My posts</Link>
+        <Link to={`/myposts/${currentUser.id}`} className='btn'>My posts</Link>
         
         <div className="profile__details">
           <div className="avatar__wrapper">
