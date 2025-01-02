@@ -123,7 +123,7 @@ const changeUserAvatar = async (req, res, next) => {
         });
         
     } catch (error) {
-        return next(new HttpError(error));
+        return next(new HttpError(error)); 
     }
 }
 
