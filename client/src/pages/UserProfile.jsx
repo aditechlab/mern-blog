@@ -1,5 +1,5 @@
-import React, { useContext, useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useContext, useEffect, useState } from 'react'
+import { Link, useParams } from 'react-router-dom'
 import { FaCheck, FaEdit } from 'react-icons/fa'
 import AccessControl from '../components/AccessControl'
 import { UserContext } from '../context/userContext'
@@ -17,6 +17,24 @@ const UserProfile = () => {
   const [isAvatarTouched, setIsAvatarTouched] = useState(false)
   
   const { currentUser } = useContext(UserContext);
+  const {id} = useParams();
+
+  useEffect(()=> {
+    const getUser = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/users/${id}`, {
+          withCredentials:true, headers: {Authorization: `Bearer ${currentUser?.token}`}
+        });
+        const {name, email, avatar} = response.data;
+        setName(name);
+        setEmail(email);
+        setAvatar(avatar);
+      } catch (error) {
+        
+      }
+    }
+    getUser();
+  }, [])
 
   const changeAvatarHandler = async (e) => {
     e.preventDefault();
