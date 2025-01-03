@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { FaCheck, FaEdit } from 'react-icons/fa'
 import AccessControl from '../components/AccessControl'
 import { UserContext } from '../context/userContext'
@@ -11,13 +11,14 @@ const UserProfile = () => {
   const [email, setEmail] = useState('')
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
-  const [ConfirmNewPassword, setConfirmNewPassword] = useState('')
+  const [confirmNewPassword, setConfirmNewPassword] = useState('')
   const [error, setError] = useState('')
 
   const [isAvatarTouched, setIsAvatarTouched] = useState(false)
   
   const { currentUser } = useContext(UserContext);
   const {id} = useParams();
+  const navigate = useNavigate();
 
   useEffect(()=> {
     const getUser = async () => {
@@ -30,11 +31,12 @@ const UserProfile = () => {
         setEmail(email);
         setAvatar(avatar);
       } catch (error) {
+        console.log(error);
         
       }
     }
     getUser();
-  }, [])
+  }, [id])
 
   const changeAvatarHandler = async (e) => {
     e.preventDefault();
@@ -52,6 +54,33 @@ const UserProfile = () => {
       });
       setAvatar(response.data.avatar);
       
+    } catch (err) {
+      console.log("Error fetching user data:", err);
+    }
+  }
+
+  const updateUserDetails = async (e) => {
+    e.preventDefault();
+
+    
+    try {
+      const userData = {
+        name,
+        email,
+        currentPassword,
+        newPassword,
+        confirmNewPassword,
+    };
+  
+      const response = await axios.patch(`${process.env.REACT_APP_BASE_URL}/users/edit-user`, userData, {
+        withCredentials:true, headers: {Authorization: `Bearer ${currentUser?.token}`}
+      });
+      
+      if(response.status === 200){
+        //log user out
+        navigate('/logout')
+
+      }
     } catch (err) {
       setError(err.response.data.message)
     }
@@ -78,23 +107,23 @@ const UserProfile = () => {
           <h1 className='center'>{currentUser.name}</h1>
           
           {/* form to update user details */}
-          <form action="" className="form profile__form">
+          <form action="" className="form profile__form" onSubmit={updateUserDetails}>
             {error && <p className="form__error-message">{error}</p>}
             <input 
               type="text" name="name" id="name" placeholder='Full Name' 
               value={name} onChange={e => setName(e.target.value)} />
             <input 
-              type="text" name="email" id="email" placeholder='Email id' 
+              type="email" name="email" id="email" placeholder='Email id' 
               value={email} onChange={e => setEmail(e.target.value)} />
             <input 
-              type="text" name="currentPassword" id="currentPassword" placeholder='Current Password' 
+              type="password" name="currentPassword" id="currentPassword" placeholder='Current Password' 
               value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} />
             <input 
-              type="text" name="newPassword" id="newPassword" placeholder='New Password' 
+              type="password" name="newPassword" id="newPassword" placeholder='New Password' 
               value={newPassword} onChange={e => setNewPassword(e.target.value)} />
             <input 
-              type="text" name="confirmPassword" id="confirmPassword" placeholder='Confirm Password' 
-              value={ConfirmNewPassword} onChange={e => setConfirmNewPassword(e.target.value)} />
+              type="password" name="confirmNewPassword" id="confirmNewPassword" placeholder='Confirm New Password' 
+              value={confirmNewPassword} onChange={e => setConfirmNewPassword(e.target.value)} />
               <button type="submit" className='btn primary'>Update details</button>
           </form>
         </div>
