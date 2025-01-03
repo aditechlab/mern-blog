@@ -8,7 +8,7 @@ const Footer = () => {
     <footer>
       <ul className="footer__categories">
         {POST_CATEGORIES.map(cat => 
-          <li><Link to={`/posts/categories/${cat}`}>{cat}</Link></li>
+          <li key={cat}><Link to={`/posts/categories/${cat}`}>{cat}</Link></li>
         )}
       </ul>
       <div className="footer__copyright">
